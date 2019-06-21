@@ -1,0 +1,5 @@
+rules:
+- rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
+  matches: [^TWIM]
+  react_to_reply: true
+  reaction: 🍪
