@@ -17,7 +17,7 @@ from typing import Pattern, List, Set, Type
 from attr import dataclass
 import re
 
-from mautrix.types import RoomID, EventType, ReactionEventContent, RelationType
+from mautrix.types import RoomID, EventType
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 
 from maubot import Plugin, MessageEvent
