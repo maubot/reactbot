@@ -137,19 +137,28 @@ class ReactBot(Plugin):
         self.templates = {}
         self.on_external_config_update()
 
+    @staticmethod
+    def _parse_variables(data: Dict[str, Any]) -> Dict[str, JinjaTemplate]:
+        return {name: JinjaTemplate(var_tpl) for name, var_tpl
+                in data.get("variables", {}).items()}
+
+    def _make_template(self, tpl: Dict[str, Any]) -> Template:
+        return Template(type=EventType.find(tpl.get("type", "m.room.message")),
+                        variables=self._parse_variables(tpl),
+                        content=tpl.get("content", {})).init()
+
+    def _make_rule(self, rule: Dict[str, Any]) -> Rule:
+        return Rule(rooms=set(rule.get("rooms", [])),
+                    matches=[re.compile(match) for match in rule.get("matches")],
+                    type=EventType.find(rule["type"]) if "type" in rule else None,
+                    template=self.templates[rule["template"]],
+                    variables=self._parse_variables(rule))
+
     def on_external_config_update(self) -> None:
         self.config.load_and_update()
-        self.templates = {name: Template(type=EventType.find(tpl.get("type", "m.room.message")),
-                                         variables={name: JinjaTemplate(var_tpl) for name, var_tpl
-                                                    in tpl.get("variables", {}).items()},
-                                         content=tpl.get("content", {})).init()
+        self.templates = {name: self._make_template(tpl)
                           for name, tpl in self.config["templates"].items()}
-        self.rules = {name: Rule(rooms=set(rule.get("rooms", [])),
-                                 matches=[re.compile(match) for match in rule.get("matches")],
-                                 type=EventType.find(rule["type"]) if "type" in rule else None,
-                                 template=self.templates[rule["template"]],
-                                 variables={name: JinjaTemplate(template) for name, template
-                                            in rule.get("variables", {}).items()})
+        self.rules = {name: self._make_rule(rule)
                       for name, rule in self.config["rules"].items()}
 
     @event.on(EventType.ROOM_MESSAGE)
