@@ -89,7 +89,7 @@ class Template:
                      **extra_vars}
         content = copy.deepcopy(self.content)
         for path in self._variable_locations:
-            data: Dict[str, Any] = self._recurse(content, path[:1])
+            data: Dict[str, Any] = self._recurse(content, path[:-1])
             key = path[-1]
             if isinstance(key, Key):
                 key = str(key)
@@ -123,6 +123,10 @@ class Rule:
         await evt.client.send_message_event(evt.room_id, self.type or self.template.type, content)
 
 
+class ConfigError(Exception):
+    pass
+
+
 class ReactBot(Plugin):
     rules: Dict[str, Rule]
     templates: Dict[str, Template]
@@ -142,24 +146,33 @@ class ReactBot(Plugin):
         return {name: JinjaTemplate(var_tpl) for name, var_tpl
                 in data.get("variables", {}).items()}
 
-    def _make_template(self, tpl: Dict[str, Any]) -> Template:
-        return Template(type=EventType.find(tpl.get("type", "m.room.message")),
-                        variables=self._parse_variables(tpl),
-                        content=tpl.get("content", {})).init()
+    def _make_template(self, name: str, tpl: Dict[str, Any]) -> Template:
+        try:
+            return Template(type=EventType.find(tpl.get("type", "m.room.message")),
+                            variables=self._parse_variables(tpl),
+                            content=tpl.get("content", {})).init()
+        except Exception as e:
+            raise ConfigError(f"Failed to load {name}") from e
 
-    def _make_rule(self, rule: Dict[str, Any]) -> Rule:
-        return Rule(rooms=set(rule.get("rooms", [])),
-                    matches=[re.compile(match) for match in rule.get("matches")],
-                    type=EventType.find(rule["type"]) if "type" in rule else None,
-                    template=self.templates[rule["template"]],
-                    variables=self._parse_variables(rule))
+    def _make_rule(self, name: str, rule: Dict[str, Any]) -> Rule:
+        try:
+            return Rule(rooms=set(rule.get("rooms", [])),
+                        matches=[re.compile(match) for match in rule.get("matches")],
+                        type=EventType.find(rule["type"]) if "type" in rule else None,
+                        template=self.templates[rule["template"]],
+                        variables=self._parse_variables(rule))
+        except Exception as e:
+            raise ConfigError(f"Failed to load {name}") from e
 
     def on_external_config_update(self) -> None:
         self.config.load_and_update()
-        self.templates = {name: self._make_template(tpl)
-                          for name, tpl in self.config["templates"].items()}
-        self.rules = {name: self._make_rule(rule)
-                      for name, rule in self.config["rules"].items()}
+        try:
+            self.templates = {name: self._make_template(name, tpl)
+                              for name, tpl in self.config["templates"].items()}
+            self.rules = {name: self._make_rule(name, rule)
+                          for name, rule in self.config["rules"].items()}
+        except ConfigError:
+            self.log.exception("Failed to load config")
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:
