@@ -112,7 +112,7 @@ class Rule:
         if len(self.rooms) > 0 and evt.room_id not in self.rooms:
             return None
         for pattern in self.matches:
-            match = pattern.match(evt.content.body)
+            match = pattern.search(evt.content.body)
             if match:
                 return match
         return None
@@ -154,7 +154,9 @@ class ReactBot(Plugin):
                       for name, rule in self.config["rules"].items()}
 
     @event.on(EventType.ROOM_MESSAGE)
-    async def echo_handler(self, evt: MessageEvent) -> None:
+    async def event_handler(self, evt: MessageEvent) -> None:
+        if evt.sender == self.client.mxid:
+            return
         for name, rule in self.rules.items():
             match = rule.match(evt)
             if match is not None:
