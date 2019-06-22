@@ -1,5 +1,38 @@
+templates:
+  reaction:
+    type: m.reaction
+    variables:
+      react_to_event: "{{event.content.get_reply_to() or event.event_id}}"
+    content:
+      m.relates_to:
+        rel_type: m.annotation
+        event_id: $${react_to_event}
+        key: $${reaction}
+  jesari:
+    type: m.room.message
+    content:
+      msgtype: m.image
+      body: putkiteippi.gif
+      url: "mxc://maunium.net/LNjeTZvDEaUdQAROvWGHLLDi"
+      info:
+        mimetype: image/gif
+        width: 1280
+        height: 535
+        size: 7500893
+        thumbnail_url: "mxc://maunium.net/xdhlegZQgGwlMRzBfhNxyEfb"
+        thumbnail_info:
+          mimetype: image/png
+          width: 800
+          height: 334
+          size: 417896
+
 rules:
-- rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
-  matches: [^TWIM]
-  react_to_reply: true
-  reaction: 🍪
+  twim_cookies:
+    rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
+    matches: [^TWIM]
+    template: reaction
+    variables:
+      reaction: 🍪
+  jesari:
+    matches: [jesari]
+    template: jesari
