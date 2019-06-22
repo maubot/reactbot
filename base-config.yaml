@@ -8,23 +8,23 @@ templates:
         rel_type: m.annotation
         event_id: $${react_to_event}
         key: $${reaction}
-  jesari:
+  alot:
     type: m.room.message
     content:
       msgtype: m.image
-      body: putkiteippi.gif
-      url: "mxc://maunium.net/LNjeTZvDEaUdQAROvWGHLLDi"
+      body: image.png
+      url: "mxc://maunium.net/eFnyRdgJOHlKXCxzoKPQbwLV"
       info:
-        mimetype: image/gif
-        width: 1280
-        height: 535
-        size: 7500893
-        thumbnail_url: "mxc://maunium.net/xdhlegZQgGwlMRzBfhNxyEfb"
+        mimetype: image/png
+        w: 680
+        h: 510
+        size: 247492
+        thumbnail_url: "mxc://maunium.net/PMxffxMfcUZeWeeYMDCdghBG"
         thumbnail_info:
+          w: 680
+          h: 510
           mimetype: image/png
-          width: 800
-          height: 334
-          size: 417896
+          size: 233763
 
 rules:
   twim_cookies:
@@ -33,6 +33,6 @@ rules:
     template: reaction
     variables:
       reaction: 🍪
-  jesari:
-    matches: [jesari]
-    template: jesari
+  alot:
+    matches: [alot]
+    template: alot
