@@ -24,7 +24,7 @@ from jinja2 import Template as JinjaTemplate
 from mautrix.types import RoomID, EventType, Event
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 
-from maubot import Plugin, MessageEvent, Client
+from maubot import Plugin, MessageEvent
 from maubot.handlers import event
 
 
@@ -34,14 +34,13 @@ class Config(BaseProxyConfig):
         helper.copy("templates")
 
 
-variable_regex = re.compile(r"\$\${([0-9A-Za-z-_]+)}")
-
-
 class Key(str):
     pass
 
 
 Index = NewType("Index", Union[str, int, Key])
+
+variable_regex = re.compile(r"\$\${([0-9A-Za-z-_]+)}")
 
 
 @dataclass
