@@ -16,6 +16,7 @@
 from typing import (NewType, Optional, Callable, Pattern, Match, Union, Dict, List, Tuple, Set,
                     Type, Any)
 from itertools import chain
+import json
 import copy
 import re
 
@@ -69,6 +70,7 @@ class SimplePattern:
 
 RMatch = Union[Match, BlankMatch]
 RPattern = Union[Pattern, SimplePattern]
+InputPattern = Union[str, Dict[str, str]]
 
 Index = NewType("Index", Union[str, int, Key])
 
@@ -79,7 +81,7 @@ variable_regex = re.compile(r"\$\${([0-9A-Za-z-_]+)}")
 class Template:
     type: EventType
     variables: Dict[str, JinjaTemplate]
-    content: Dict[str, Any]
+    content: Union[Dict[str, Any], JinjaTemplate]
 
     _variable_locations: List[Tuple[Index, ...]] = None
 
@@ -122,6 +124,9 @@ class Template:
         variables = {**{name: template.render(event=evt)
                         for name, template in chain(self.variables.items(), rule_vars.items())},
                      **extra_vars}
+        if isinstance(self.content, JinjaTemplate):
+            raw_json = self.content.render(event=evt, **variables)
+            return json.loads(raw_json)
         content = copy.deepcopy(self.content)
         for path in self._variable_locations:
             data: Dict[str, Any] = self._recurse(content, path[:-1])
@@ -187,16 +192,26 @@ class ReactBot(Plugin):
         return {name: JinjaTemplate(var_tpl) for name, var_tpl
                 in data.get("variables", {}).items()}
 
+    def _parse_content(self, content: Union[Dict[str, Any], str]
+                       ) -> Union[Dict[str, Any], JinjaTemplate]:
+        if not content:
+            return {}
+        elif isinstance(content, str):
+            return JinjaTemplate(content)
+        return content
+
     def _make_template(self, name: str, tpl: Dict[str, Any]) -> Template:
         try:
             return Template(type=EventType.find(tpl.get("type", "m.room.message")),
                             variables=self._parse_variables(tpl),
-                            content=tpl.get("content", {})).init()
+                            content=self._parse_content(tpl.get("content", None))).init()
         except Exception as e:
             raise ConfigError(f"Failed to load {name}") from e
 
-    def _get_flags(self, flags: str) -> re.RegexFlag:
-        output = self.default_flags
+    def _get_flags(self, flags: Union[str, List[str]]) -> re.RegexFlag:
+        if not flags:
+            return self.default_flags
+        output = re.RegexFlag(0)
         for flag in flags:
             flag = flag.lower()
             if flag == "i" or flag == "ignorecase":
@@ -215,14 +230,14 @@ class ReactBot(Plugin):
                 output |= re.ASCII
         return output
 
-    def _compile(self, pattern: str) -> RPattern:
+    def _compile(self, pattern: InputPattern) -> RPattern:
         flags = self.default_flags
-        raw = False
+        raw = None
         if isinstance(pattern, dict):
             flags = self._get_flags(pattern.get("flags", ""))
             raw = pattern.get("raw", False)
             pattern = pattern["pattern"]
-        if not flags or flags == re.IGNORECASE:
+        if raw is not False and (not flags & re.MULTILINE or raw is True):
             ignorecase = flags == re.IGNORECASE
             s_pattern = pattern.lower() if ignorecase else pattern
             esc = ""
@@ -242,8 +257,11 @@ class ReactBot(Plugin):
                 return SimplePattern(lambda val: s_pattern in val, ignorecase=ignorecase)
         return re.compile(pattern, flags=flags)
 
-    def _compile_all(self, patterns: List[str]) -> List[RPattern]:
-        return [self._compile(pattern) for pattern in patterns]
+    def _compile_all(self, patterns: Union[InputPattern, List[InputPattern]]) -> List[RPattern]:
+        if isinstance(patterns, list):
+            return [self._compile(pattern) for pattern in patterns]
+        else:
+            return [self._compile(patterns)]
 
     def _make_rule(self, name: str, rule: Dict[str, Any]) -> Rule:
         try:
