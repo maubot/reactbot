@@ -147,7 +147,7 @@ rules:
                 To avoid spreading unnecessary bias and confusion, it is best to adopt a firm policy not to speak or even think in terms of "intellectual property".
                 The hypocrisy of calling these powers "rights" is starting to make the World "Intellectual Property" Organization embarrassed.
     lamp:
-        matches: [(\s|^)lamp]
+        matches: [(\s|^)lamp(\s|$)]
         template: plaintext_notice
         variables:
             message: |
@@ -180,7 +180,7 @@ rules:
             message: |
                 I'd just like to interject for one moment. Please avoid using the term "open" or "open source" as a substitute for "free software". Those terms refer to a different position based on different values. Free software is a political movement; open source is a development model. When referring to the open source position, using its name is appropriate; but please do not use it to label us or our work--that leads people to think we share those views.
     pc:
-        matches: [(\s|^)pcs?]
+        matches: [(\s|^)pcs?(\s|$)]
         template: plaintext_notice
         variables:
             message: |
@@ -200,7 +200,7 @@ rules:
                 I'd just like to interject for one moment. Publishers often refer to copying they don't approve of as "piracy." In this way, they imply that it is ethically equivalent to attacking ships on the high seas, kidnapping and murdering the people on them. Based on such propaganda, they have procured laws in most of the world to forbid copying in most (or sometimes all) circumstances. (They are still pressuring to make these prohibitions more complete.)
                 If you don't believe that copying not approved by the publisher is just like kidnapping and murder, you might prefer not to use the word "piracy" to describe it. Neutral terms such as "unauthorized copying" (or "prohibited copying" for the situation where it is illegal) are available for use instead. Some of us might even prefer to use a positive term such as "sharing information with your neighbor."
     powerpoint:
-        matches: [powerpoint, \sppt]
+        matches: [powerpoint, \sppt(\s|$)]
         template: plaintext_notice
         variables:
             message: |
@@ -329,7 +329,7 @@ rules:
                 I'd just like to interject for one moment. To speak of “compensation for authors” in connection with copyright carries the assumptions that (1) copyright exists for the sake of authors and (2) whenever we read something, we take on a debt to the author which we must then repay. The first assumption is simply false, and the second is outrageous.
                 “Compensating the rights-holders” adds a further swindle: you're supposed to imagine that means paying the authors, and occasionally it does, but most of the time it means a subsidy for the same publishing companies that are pushing unjust laws on us.
     consume:
-        matches: [consume\s]
+        matches: [(^|\s)consume(\s|$)]
         template: plaintext_notice
         variables:
             message: |
@@ -379,7 +379,7 @@ rules:
             message: |
                 I'd just like to interject for one moment. Don't use “freely available software” as a synonym for “free software.” The terms are not equivalent. Software is “freely available” if anyone can easily get a copy. “Free software” is defined in terms of the freedom of users that have a copy of it. These are answers to different questions.
     google:
-        matches: [google\\s]
+        matches: [(^|\s)google(\s|$)]
         template: plaintext_notice
         variables:
             message: |
