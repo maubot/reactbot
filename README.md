@@ -1,6 +1,13 @@
 # reactbot
 A simple [maubot](https://github.com/maubot/maubot) that responds to messages that match predefined rules.
 
+## Samples
+* The [base config](base-config.yaml) contains a cookie reaction for TWIM submissions
+  in [#thisweekinmatrix:matrix.org](https://matrix.to/#/#thisweekinmatrix:matrix.org)
+  and an image response for "alot".
+* [samples/jesari.yaml](samples/jesari.yaml) contains a replacement for [jesaribot](https://github.com/maubot/jesaribot)
+* [samples/stallman.yaml](samples/stallman.yaml) contains a Stallman interject bot.
+
 ## Config format
 ### Templates
 Templates contain the actual event type and content to be sent.
