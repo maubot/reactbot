@@ -1,5 +1,5 @@
 # reactbot
-A simple [maubot](https://github.com/maubot/maubot) that responds to messages that match predefined rules.
+A [maubot](https://github.com/maubot/maubot) that responds to messages that match predefined rules.
 
 ## Samples
 * The [base config](base-config.yaml) contains a cookie reaction for TWIM submissions
