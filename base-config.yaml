@@ -26,6 +26,9 @@ templates:
           mimetype: image/png
           size: 233763
 
+default_flags:
+- ignorecase
+
 rules:
   twim_cookies:
     rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
