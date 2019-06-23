@@ -37,6 +37,8 @@ class Config(BaseProxyConfig):
         helper.copy("rules")
         helper.copy("templates")
         helper.copy("default_flags")
+        helper.copy("antispam.max")
+        helper.copy("antispam.delay")
 
     def parse_data(self) -> None:
         self.default_flags = re.RegexFlag(0)

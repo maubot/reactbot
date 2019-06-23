@@ -29,6 +29,10 @@ templates:
 default_flags:
 - ignorecase
 
+antispam:
+  max: 2
+  delay: 60
+
 rules:
   twim_cookies:
     rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
