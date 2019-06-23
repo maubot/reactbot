@@ -13,9 +13,9 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Type
+from typing import Type, Tuple
 
-from mautrix.types import EventType
+from mautrix.types import EventType, MessageType
 from mautrix.util.config import BaseProxyConfig
 
 from maubot import Plugin, MessageEvent
@@ -25,6 +25,8 @@ from .config import Config, ConfigError
 
 
 class ReactBot(Plugin):
+    allowed_msgtypes: Tuple[MessageType, ...] = (MessageType.TEXT, MessageType.EMOTE)
+
     @classmethod
     def get_config_class(cls) -> Type[BaseProxyConfig]:
         return Config
@@ -42,7 +44,7 @@ class ReactBot(Plugin):
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:
-        if evt.sender == self.client.mxid:
+        if evt.sender == self.client.mxid or evt.content.msgtype not in self.allowed_msgtypes:
             return
         for name, rule in self.config.rules.items():
             match = rule.match(evt)
