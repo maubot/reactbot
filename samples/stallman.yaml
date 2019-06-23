@@ -240,7 +240,7 @@ rules:
             message: |
                 I'd just like to interject for one moment. Please don't use the term "vendor" to refer generally to anyone that develops or packages software. Many programs are developed in order to sell copies, and their developers are therefore their vendors; this even includes some free software packages. However, many programs are developed by volunteers or organizations which do not intend to sell copies. These developers are not vendors. Likewise, only some of the packagers of GNU/Linux distributions are vendors. We recommend the general term "supplier" instead.
     arch:
-        matches: [(^|\s)arch]
+        matches: (^|\s)arch($|\s)
         template: plaintext_notice
         variables:
             message: |
