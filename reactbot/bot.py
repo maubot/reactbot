@@ -29,16 +29,17 @@ from .config import Config, ConfigError
 
 @dataclass
 class FloodInfo:
-    rb: 'ReactBot'
+    max: int
+    delay: int
     count: int
     last_message: int
 
     def bump(self) -> bool:
         now = int(time.time())
-        if self.last_message + self.rb.config["antispam.delay"] < now:
+        if self.last_message + self.delay < now:
             self.count = 0
         self.count += 1
-        if self.count > self.rb.config["antispam.max"]:
+        if self.count > self.max:
             return True
         self.last_message = now
         return False
@@ -66,10 +67,21 @@ class ReactBot(Plugin):
         except ConfigError:
             self.log.exception("Failed to load config")
 
+    def _make_flood_info(self, for_type: str) -> 'FloodInfo':
+        return FloodInfo(max=self.config[f"antispam.{for_type}.max"],
+                         delay=self.config[f"antispam.{for_type}.delay"],
+                         count=0, last_message=0)
+
+    def _get_flood_info(self, flood_map: dict, key: str, for_type: str) -> 'FloodInfo':
+        try:
+            return flood_map[key]
+        except KeyError:
+            fi = flood_map[key] = self._make_flood_info(for_type)
+            return fi
+
     def is_flood(self, evt: MessageEvent) -> bool:
-        uf = self.user_flood.setdefault(evt.sender, FloodInfo(rb=self, count=0, last_message=0))
-        rf = self.room_flood.setdefault(evt.room_id, FloodInfo(rb=self, count=0, last_message=0))
-        return uf.bump() or rf.bump()
+        return (self._get_flood_info(self.user_flood, evt.sender, "user").bump()
+                or self._get_flood_info(self.room_flood, evt.room_id, "room").bump())
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:
