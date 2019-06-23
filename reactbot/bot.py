@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from typing import Type, Tuple, Dict
+from itertools import chain
 import time
 
 from attr import dataclass
@@ -66,6 +67,12 @@ class ReactBot(Plugin):
             self.config.parse_data()
         except ConfigError:
             self.log.exception("Failed to load config")
+        for fi in self.user_flood.items():
+            fi.max = self.config["antispam.user.max"]
+            fi.delay = self.config["antispam.user.delay"]
+        for fi in self.room_flood.items():
+            fi.max = self.config["antispam.room.max"]
+            fi.delay = self.config["antispam.room.delay"]
 
     def _make_flood_info(self, for_type: str) -> 'FloodInfo':
         return FloodInfo(max=self.config[f"antispam.{for_type}.max"],
