@@ -217,8 +217,8 @@ class ReactBot(Plugin):
         raw = False
         if isinstance(pattern, dict):
             flags = self._get_flags(pattern.get("flags", ""))
-            pattern = pattern["pattern"]
             raw = pattern.get("raw", False)
+            pattern = pattern["pattern"]
         if not flags or flags == re.IGNORECASE:
             ignorecase = flags == re.IGNORECASE
             s_pattern = pattern.lower() if ignorecase else pattern
