@@ -1,0 +1,26 @@
+templates:
+    jesari:
+        type: m.room.message
+        content:
+            msgtype: m.image
+            body: putkiteippi.gif
+            url: mxc://maunium.net/LNjeTZvDEaUdQAROvWGHLLDi
+            info:
+                mimetype: image/gif
+                w: 1280
+                h: 535
+                size: 7500893
+                thumbnail_url: mxc://maunium.net/xdhlegZQgGwlMRzBfhNxyEfb
+                thumbnail_info:
+                    mimetype: image/png
+                    w: 800
+                    h: 334
+                    size: 417896
+
+default_flags:
+- ignorecase
+
+rules:
+    jesari:
+        matches: [jesaro?i]
+        template: jesari
