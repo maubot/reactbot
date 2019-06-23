@@ -111,6 +111,9 @@ class Template:
     def _replace_variables(tpl: str, variables: Dict[str, Any]) -> str:
         for match in variable_regex.finditer(tpl):
             val = variables[match.group(1)]
+            if match.start() == 0 and match.end() == len(tpl):
+                # Whole field is a single variable, just return the value to allow non-string types.
+                return val
             tpl = tpl[:match.start()] + val + tpl[match.end():]
         return tpl
 
