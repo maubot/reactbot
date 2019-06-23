@@ -1,3 +1,5 @@
+# Messages from https://github.com/interwho/stallman-bot (MIT license)
+
 templates:
     plaintext_notice:
         type: m.room.message
