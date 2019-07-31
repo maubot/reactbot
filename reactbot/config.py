@@ -53,6 +53,7 @@ class Config(BaseProxyConfig):
     def _make_rule(self, name: str, rule: Dict[str, Any]) -> Rule:
         try:
             return Rule(rooms=set(rule.get("rooms", [])),
+                        not_rooms=set(rule.get("not_rooms", [])),
                         matches=self._compile_all(rule["matches"]),
                         not_matches=self._compile_all(rule.get("not_matches", [])),
                         type=EventType.find(rule["type"]) if "type" in rule else None,

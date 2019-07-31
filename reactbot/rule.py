@@ -31,6 +31,7 @@ RPattern = Union[Pattern, SimplePattern]
 @dataclass
 class Rule:
     rooms: Set[RoomID]
+    not_rooms: Set[RoomID]
     matches: List[RPattern]
     not_matches: List[RPattern]
     template: Template
@@ -45,6 +46,8 @@ class Rule:
 
     def match(self, evt: MessageEvent) -> Optional[Match]:
         if len(self.rooms) > 0 and evt.room_id not in self.rooms:
+            return None
+        elif evt.room_id in self.not_rooms:
             return None
         for pattern in self.matches:
             match = pattern.search(evt.content.body)
