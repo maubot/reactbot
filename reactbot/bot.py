@@ -67,10 +67,10 @@ class ReactBot(Plugin):
             self.config.parse_data()
         except ConfigError:
             self.log.exception("Failed to load config")
-        for fi in self.user_flood.items():
+        for fi in self.user_flood.values():
             fi.max = self.config["antispam.user.max"]
             fi.delay = self.config["antispam.user.delay"]
-        for fi in self.room_flood.items():
+        for fi in self.room_flood.values():
             fi.max = self.config["antispam.room.max"]
             fi.delay = self.config["antispam.room.delay"]
 
