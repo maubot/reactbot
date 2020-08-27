@@ -53,11 +53,11 @@ class Template:
                 self._map_variable_locations((*path, i), v)
         elif isinstance(data, dict):
             for k, v in data.items():
-                if variable_regex.match(k):
+                if variable_regex.search(k):
                     self._variable_locations.append((*path, Key(k)))
                 self._map_variable_locations((*path, k), v)
         elif isinstance(data, str):
-            if variable_regex.match(data):
+            if variable_regex.search(data):
                 self._variable_locations.append(path)
 
     @classmethod
