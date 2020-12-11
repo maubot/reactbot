@@ -76,7 +76,7 @@ class Template:
             tpl = tpl[:match.start()] + val + tpl[match.end():]
         return tpl
 
-    def execute(self, evt: Event, rule_vars: Dict[str, JinjaTemplate], extra_vars: Dict[str, str]
+    def execute(self, evt: Event, rule_vars: Dict[str, Any], extra_vars: Dict[str, str]
                 ) -> Dict[str, Any]:
         variables = extra_vars
         for name, template in chain(rule_vars.items(), self.variables.items()):
