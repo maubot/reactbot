@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Callable, List, Optional
+from typing import Callable, List, Dict, Optional
 import re
 
 
@@ -21,6 +21,10 @@ class BlankMatch:
     @staticmethod
     def groups() -> List[str]:
         return []
+
+    @staticmethod
+    def groupdict() -> Dict[str, str]:
+        return {}
 
 
 class SimplePattern:

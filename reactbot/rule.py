@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Optional, Match, Dict, List, Set, Union, Pattern
+from typing import Optional, Match, Dict, List, Set, Union, Pattern, Any
 
 from attr import dataclass
 from jinja2 import Template as JinjaTemplate
@@ -36,7 +36,7 @@ class Rule:
     not_matches: List[RPattern]
     template: Template
     type: Optional[EventType]
-    variables: Dict[str, JinjaTemplate]
+    variables: Dict[str, Any]
 
     def _check_not_match(self, body: str) -> bool:
         for pattern in self.not_matches:
@@ -58,7 +58,9 @@ class Rule:
         return None
 
     async def execute(self, evt: MessageEvent, match: Match) -> None:
-        content = self.template.execute(evt=evt, rule_vars=self.variables,
-                                        extra_vars={str(i): val for i, val in
-                                                    enumerate(match.groups())})
+        extra_vars = {
+            **{str(i): val for i, val in enumerate(match.groups())},
+            **match.groupdict(),
+        }
+        content = self.template.execute(evt=evt, rule_vars=self.variables, extra_vars=extra_vars)
         await evt.client.send_message_event(evt.room_id, self.type or self.template.type, content)

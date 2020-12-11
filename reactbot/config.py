@@ -88,9 +88,11 @@ class Config(BaseProxyConfig):
         return re.compile(pattern, flags=flags)
 
     @staticmethod
-    def _parse_variables(data: Dict[str, Any]) -> Dict[str, JinjaTemplate]:
-        return {name: JinjaTemplate(var_tpl) for name, var_tpl
-                in data.get("variables", {}).items()}
+    def _parse_variables(data: Dict[str, Any]) -> Dict[str, Any]:
+        return {name: (JinjaTemplate(var_tpl)
+                       if isinstance(var_tpl, str) and var_tpl.startswith("{{")
+                       else var_tpl)
+                for name, var_tpl in data.get("variables", {}).items()}
 
     @staticmethod
     def _parse_content(content: Union[Dict[str, Any], str]) -> Union[Dict[str, Any], JinjaTemplate]:

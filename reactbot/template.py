@@ -37,7 +37,7 @@ Index = Union[str, int, Key]
 @dataclass
 class Template:
     type: EventType
-    variables: Dict[str, JinjaTemplate]
+    variables: Dict[str, Any]
     content: Union[Dict[str, Any], JinjaTemplate]
 
     _variable_locations: List[Tuple[Index, ...]] = None
@@ -78,9 +78,12 @@ class Template:
 
     def execute(self, evt: Event, rule_vars: Dict[str, JinjaTemplate], extra_vars: Dict[str, str]
                 ) -> Dict[str, Any]:
-        variables = {**{name: template.render(event=evt)
-                        for name, template in chain(self.variables.items(), rule_vars.items())},
-                     **extra_vars}
+        variables = extra_vars
+        for name, template in chain(rule_vars.items(), self.variables.items()):
+            if isinstance(template, JinjaTemplate):
+                variables[name] = template.render(event=evt, variables=variables)
+            else:
+                variables[name] = template
         if isinstance(self.content, JinjaTemplate):
             raw_json = self.content.render(event=evt, **variables)
             return json.loads(raw_json)
