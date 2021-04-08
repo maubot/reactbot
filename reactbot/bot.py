@@ -1,4 +1,4 @@
-# reminder - A maubot plugin that reacts to messages that match predefined rules.
+# reactbot - A maubot plugin that reacts to messages that match predefined rules.
 # Copyright (C) 2019 Tulir Asokan
 #
 # This program is free software: you can redistribute it and/or modify
@@ -49,6 +49,7 @@ class ReactBot(Plugin):
     allowed_msgtypes: Tuple[MessageType, ...] = (MessageType.TEXT, MessageType.EMOTE)
     user_flood: Dict[UserID, FloodInfo]
     room_flood: Dict[RoomID, FloodInfo]
+    config: Config
 
     @classmethod
     def get_config_class(cls) -> Type[BaseProxyConfig]:
@@ -100,6 +101,6 @@ class ReactBot(Plugin):
                     return
                 try:
                     await rule.execute(evt, match)
-                except Exception:
-                    self.log.exception(f"Failed to execute {name}")
+                except Exception as e:
+                    self.log.warning(f"Failed to execute {name}: {e}")
                 return

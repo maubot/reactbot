@@ -1,4 +1,4 @@
-# reminder - A maubot plugin that reacts to messages that match predefined rules.
+# reactbot - A maubot plugin that reacts to messages that match predefined rules.
 # Copyright (C) 2019 Tulir Asokan
 #
 # This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
-# reminder - A maubot plugin that reacts to messages that match predefined rules.
-# Copyright (C) 2019 Tulir Asokan
+# reactbot - A maubot plugin that reacts to messages that match predefined rules.
+# Copyright (C) 2021 Tulir Asokan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ from jinja2 import Template as JinjaTemplate
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 from mautrix.types import EventType
 
-from .simplepattern import SimplePattern
+from .simplepattern import SimplePattern, RegexPattern
 from .template import Template
 from .rule import Rule, RPattern
 
@@ -58,7 +58,8 @@ class Config(BaseProxyConfig):
                         not_matches=self._compile_all(rule.get("not_matches", [])),
                         type=EventType.find(rule["type"]) if "type" in rule else None,
                         template=self.templates[rule["template"]],
-                        variables=self._parse_variables(rule))
+                        variables=self._parse_variables(rule),
+                        field=rule.get("field", ["content", "body"]))
         except Exception as e:
             raise ConfigError(f"Failed to load {name}") from e
 
@@ -79,13 +80,16 @@ class Config(BaseProxyConfig):
     def _compile(self, pattern: InputPattern) -> RPattern:
         flags = self.default_flags
         raw = None
+        field = None
         if isinstance(pattern, dict):
             flags = self._get_flags(pattern["flags"]) if "flags" in pattern else flags
             raw = pattern.get("raw", False)
+            field = pattern.get("field", None)
             pattern = pattern["pattern"]
         if raw is not False and (not flags & re.MULTILINE or raw is True):
-            return SimplePattern.compile(pattern, flags, raw) or re.compile(pattern, flags=flags)
-        return re.compile(pattern, flags=flags)
+            return (SimplePattern.compile(pattern, flags, raw, field=field)
+                    or RegexPattern(re.compile(pattern, flags=flags), field=field))
+        return RegexPattern(re.compile(pattern, flags=flags), field=field)
 
     @staticmethod
     def _parse_variables(data: Dict[str, Any]) -> Dict[str, Any]:
