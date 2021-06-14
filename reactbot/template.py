@@ -1,5 +1,5 @@
 # reminder - A maubot plugin that reacts to messages that match predefined rules.
-# Copyright (C) 2019 Tulir Asokan
+# Copyright (C) 2021 Tulir Asokan
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -68,13 +68,11 @@ class Template:
 
     @staticmethod
     def _replace_variables(tpl: str, variables: Dict[str, Any]) -> str:
-        for match in variable_regex.finditer(tpl):
-            val = variables[match.group(1)]
-            if match.start() == 0 and match.end() == len(tpl):
-                # Whole field is a single variable, just return the value to allow non-string types.
-                return val
-            tpl = tpl[:match.start()] + val + tpl[match.end():]
-        return tpl
+        full_var_match = variable_regex.fullmatch(tpl)
+        if full_var_match:
+            # Whole field is a single variable, just return the value to allow non-string types.
+            return variables[full_var_match.group(1)]
+        return variable_regex.sub(lambda match: str(variables[match.group(1)]), tpl)
 
     def execute(self, evt: Event, rule_vars: Dict[str, Any], extra_vars: Dict[str, str]
                 ) -> Dict[str, Any]:
