@@ -7,6 +7,8 @@ A [maubot](https://github.com/maubot/maubot) that responds to messages that matc
   and an image response for "alot".
 * [samples/jesari.yaml](samples/jesari.yaml) contains a replacement for [jesaribot](https://github.com/maubot/jesaribot).
 * [samples/stallman.yaml](samples/stallman.yaml) contains a Stallman interject bot.
+* [samples/random-reaction.yaml](samples/random-reaction.yaml) has an example of
+  a randomized reaction to matching messages.
 
 ## Config format
 ### Templates

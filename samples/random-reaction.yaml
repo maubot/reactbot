@@ -1,0 +1,25 @@
+templates:
+    random_reaction:
+        type: m.reaction
+        variables:
+            react_to_event: '{{event.event_id}}'
+            reaction: '{{ variables.reaction_choices | random }}'
+        content:
+            m.relates_to:
+                rel_type: m.annotation
+                event_id: $${react_to_event}
+                key: $${reaction}
+
+default_flags:
+- ignorecase
+
+rules:
+    random:
+        matches:
+        - hmm
+        template: random_reaction
+        variables:
+            reaction_choices:
+            - 🤔
+            - 🧐
+            - 🤨
