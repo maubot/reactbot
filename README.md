@@ -9,6 +9,8 @@ A [maubot](https://github.com/maubot/maubot) that responds to messages that matc
 * [samples/stallman.yaml](samples/stallman.yaml) contains a Stallman interject bot.
 * [samples/random-reaction.yaml](samples/random-reaction.yaml) has an example of
   a randomized reaction to matching messages.
+* [samples/nitter.yaml](samples/nitter.yaml) has an example of matching tweet links
+  and responding with a corresponding nitter.net link.
 
 ## Config format
 ### Templates

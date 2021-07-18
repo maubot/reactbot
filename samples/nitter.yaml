@@ -1,0 +1,15 @@
+templates:
+    nitter:
+        type: m.room.message
+        content:
+            msgtype: m.text
+            body: https://nitter.net/$${1}/status/$${2}
+
+default_flags:
+- ignorecase
+
+rules:
+    twitter:
+        matches:
+        - https://twitter.com/(.+?)/status/(\d+)
+        template: nitter
