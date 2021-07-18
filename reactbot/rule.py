@@ -59,7 +59,8 @@ class Rule:
 
     async def execute(self, evt: MessageEvent, match: Match) -> None:
         extra_vars = {
-            **{str(i): val for i, val in enumerate(match.groups())},
+            "0": match.group(0),
+            **{str(i+1): val for i, val in enumerate(match.groups())},
             **match.groupdict(),
         }
         content = self.template.execute(evt=evt, rule_vars=self.variables, extra_vars=extra_vars)
