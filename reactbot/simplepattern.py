@@ -23,6 +23,10 @@ class BlankMatch:
         return []
 
     @staticmethod
+    def group(group: int) -> str:
+        return ""
+
+    @staticmethod
     def groupdict() -> Dict[str, str]:
         return {}
 
