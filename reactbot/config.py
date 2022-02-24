@@ -44,6 +44,9 @@ class Config(BaseProxyConfig):
 
     def parse_data(self) -> None:
         self.default_flags = re.RegexFlag(0)
+        self.templates = {}
+        self.rules = {}
+
         self.default_flags = self._get_flags(self["default_flags"])
         self.templates = {name: self._make_template(name, tpl)
                           for name, tpl in self["templates"].items()}
