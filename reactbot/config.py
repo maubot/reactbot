@@ -59,6 +59,7 @@ class Config(BaseProxyConfig):
                         not_rooms=set(rule.get("not_rooms", [])),
                         matches=self._compile_all(rule["matches"]),
                         not_matches=self._compile_all(rule.get("not_matches", [])),
+                        probability=rule.get("probability", 1.0),
                         type=EventType.find(rule["type"]) if "type" in rule else None,
                         template=self.templates[rule["template"]],
                         variables=self._parse_variables(rule))
