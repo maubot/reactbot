@@ -37,6 +37,7 @@ class Config(BaseProxyConfig):
         helper.copy("rules")
         helper.copy("templates")
         helper.copy("default_flags")
+        helper.copy("ignored_users")
         helper.copy("antispam.user.max")
         helper.copy("antispam.user.delay")
         helper.copy("antispam.room.max")
