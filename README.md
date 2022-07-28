@@ -49,6 +49,8 @@ Rules have five fields. Only `matches` and `template` are required.
 * `rooms` - The list of rooms where the rule should apply.
             If empty, the rule will apply to all rooms the bot is in.
 * `matches` - The regex or list of regexes to match.
+* `probability` - The probability the rule will be executed expressed as a float
+                  between 0 and 1.0. Defaults to 1.0.
 * `template` - The name of the template to use.
 * `variables` - A key-value map of variables to extend or override template variables.
                 Like with template variables, the values are parsed as Jinja2 templates.

@@ -18,6 +18,8 @@ from typing import Optional, Match, Dict, List, Set, Union, Pattern, Any
 from attr import dataclass
 from jinja2 import Template as JinjaTemplate
 
+from random import random
+
 from mautrix.types import RoomID, EventType
 
 from maubot import MessageEvent
@@ -34,6 +36,7 @@ class Rule:
     not_rooms: Set[RoomID]
     matches: List[RPattern]
     not_matches: List[RPattern]
+    probability: float
     template: Template
     type: Optional[EventType]
     variables: Dict[str, Any]
@@ -48,6 +51,8 @@ class Rule:
         if len(self.rooms) > 0 and evt.room_id not in self.rooms:
             return None
         elif evt.room_id in self.not_rooms:
+            return None
+        elif self.probability < random():
             return None
         for pattern in self.matches:
             match = pattern.search(evt.content.body)
