@@ -45,5 +45,5 @@ rules:
     variables:
       reaction: 🍪
   alot:
-    matches: [alot]
+    matches: [\balot\b]
     template: alot
