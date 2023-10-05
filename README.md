@@ -11,6 +11,7 @@ A [maubot](https://github.com/maubot/maubot) that responds to messages that matc
   a randomized reaction to matching messages.
 * [samples/nitter.yaml](samples/nitter.yaml) has an example of matching tweet links
   and responding with a corresponding nitter.net link.
+* [samples/thread.yaml](samples/thread.yaml) has an example of replying in a thread.
 
 ## Config format
 ### Templates
@@ -19,7 +20,10 @@ Templates contain the actual event type and content to be sent.
 * `content` - The event content. Either an object or jinja2 template that produces JSON.
 * `variables` - A key-value map of variables.
 
-Variables are parsed as jinja2 templates and get the maubot event object in `event`.
+Variables that start with `{{` are parsed as jinja2 templates and get the
+maubot event object in `event`. As of v3, variables are parsed using jinja2's
+[native types mode](https://jinja.palletsprojects.com/en/3.1.x/nativetypes/),
+which means the output can be a non-string type.
 
 If the content is a string, it'll be parsed as a jinja2 template and the output
 will be parsed as JSON. The content jinja2 template will get `event` just like
