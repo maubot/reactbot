@@ -16,7 +16,8 @@
 from typing import List, Union, Dict, Any
 import re
 
-from jinja2 import Template as JinjaTemplate
+from jinja2 import Template as JinjaStringTemplate
+from jinja2.nativetypes import NativeTemplate as JinjaNativeTemplate
 
 from mautrix.util.config import BaseProxyConfig, ConfigUpdateHelper
 from mautrix.types import EventType
@@ -92,17 +93,17 @@ class Config(BaseProxyConfig):
 
     @staticmethod
     def _parse_variables(data: Dict[str, Any]) -> Dict[str, Any]:
-        return {name: (JinjaTemplate(var_tpl)
+        return {name: (JinjaNativeTemplate(var_tpl)
                        if isinstance(var_tpl, str) and var_tpl.startswith("{{")
                        else var_tpl)
                 for name, var_tpl in data.get("variables", {}).items()}
 
     @staticmethod
-    def _parse_content(content: Union[Dict[str, Any], str]) -> Union[Dict[str, Any], JinjaTemplate]:
+    def _parse_content(content: Union[Dict[str, Any], str]) -> Union[Dict[str, Any], JinjaStringTemplate]:
         if not content:
             return {}
         elif isinstance(content, str):
-            return JinjaTemplate(content)
+            return JinjaStringTemplate(content)
         return content
 
     @staticmethod

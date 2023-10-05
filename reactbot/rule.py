@@ -16,13 +16,12 @@
 from typing import Optional, Match, Dict, List, Set, Union, Pattern, Any
 
 from attr import dataclass
-from jinja2 import Template as JinjaTemplate
 
 from mautrix.types import RoomID, EventType
 
 from maubot import MessageEvent
 
-from .template import Template
+from .template import Template, OmitValue
 from .simplepattern import SimplePattern
 
 RPattern = Union[Pattern, SimplePattern]

@@ -20,7 +20,8 @@ import copy
 import re
 
 from attr import dataclass
-from jinja2 import Template as JinjaTemplate
+from jinja2 import Template as JinjaStringTemplate
+from jinja2.nativetypes import Template as JinjaNativeTemplate
 
 from mautrix.types import EventType, Event
 
@@ -30,6 +31,11 @@ class Key(str):
 
 
 variable_regex = re.compile(r"\$\${([0-9A-Za-z-_]+)}")
+OmitValue = object()
+
+global_vars = {
+    "omit": OmitValue,
+}
 
 Index = Union[str, int, Key]
 
@@ -38,7 +44,7 @@ Index = Union[str, int, Key]
 class Template:
     type: EventType
     variables: Dict[str, Any]
-    content: Union[Dict[str, Any], JinjaTemplate]
+    content: Union[Dict[str, Any], JinjaStringTemplate]
 
     _variable_locations: List[Tuple[Index, ...]] = None
 
@@ -78,11 +84,14 @@ class Template:
                 ) -> Dict[str, Any]:
         variables = extra_vars
         for name, template in chain(rule_vars.items(), self.variables.items()):
-            if isinstance(template, JinjaTemplate):
-                variables[name] = template.render(event=evt, variables=variables)
+            if isinstance(template, JinjaNativeTemplate):
+                rendered_var = template.render(event=evt, variables=variables, **global_vars)
+                if not isinstance(rendered_var, (str, int, list, tuple, dict, bool)) and rendered_var is not None and rendered_var is not OmitValue:
+                    rendered_var = str(rendered_var)
+                variables[name] = rendered_var
             else:
                 variables[name] = template
-        if isinstance(self.content, JinjaTemplate):
+        if isinstance(self.content, JinjaStringTemplate):
             raw_json = self.content.render(event=evt, **variables)
             return json.loads(raw_json)
         content = copy.deepcopy(self.content)
@@ -93,5 +102,9 @@ class Template:
                 key = str(key)
                 data[self._replace_variables(key, variables)] = data.pop(key)
             else:
-                data[key] = self._replace_variables(data[key], variables)
+                replaced_data = self._replace_variables(data[key], variables)
+                if replaced_data is OmitValue:
+                    del data[key]
+                else:
+                    data[key] = replaced_data
         return content
