@@ -13,16 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Type, Tuple, Dict
+from typing import Dict, Tuple, Type
 import time
 
 from attr import dataclass
 
-from mautrix.types import EventType, MessageType, UserID, RoomID
-from mautrix.util.config import BaseProxyConfig
-
-from maubot import Plugin, MessageEvent
+from maubot import MessageEvent, Plugin
 from maubot.handlers import event
+from mautrix.types import EventType, MessageType, RoomID, UserID
+from mautrix.util.config import BaseProxyConfig
 
 from .config import Config, ConfigError
 
@@ -73,12 +72,15 @@ class ReactBot(Plugin):
             fi.max = self.config["antispam.room.max"]
             fi.delay = self.config["antispam.room.delay"]
 
-    def _make_flood_info(self, for_type: str) -> 'FloodInfo':
-        return FloodInfo(max=self.config[f"antispam.{for_type}.max"],
-                         delay=self.config[f"antispam.{for_type}.delay"],
-                         count=0, last_message=0)
+    def _make_flood_info(self, for_type: str) -> "FloodInfo":
+        return FloodInfo(
+            max=self.config[f"antispam.{for_type}.max"],
+            delay=self.config[f"antispam.{for_type}.delay"],
+            count=0,
+            last_message=0,
+        )
 
-    def _get_flood_info(self, flood_map: dict, key: str, for_type: str) -> 'FloodInfo':
+    def _get_flood_info(self, flood_map: dict, key: str, for_type: str) -> "FloodInfo":
         try:
             return flood_map[key]
         except KeyError:
@@ -86,8 +88,10 @@ class ReactBot(Plugin):
             return fi
 
     def is_flood(self, evt: MessageEvent) -> bool:
-        return (self._get_flood_info(self.user_flood, evt.sender, "user").bump()
-                or self._get_flood_info(self.room_flood, evt.room_id, "room").bump())
+        return (
+            self._get_flood_info(self.user_flood, evt.sender, "user").bump()
+            or self._get_flood_info(self.room_flood, evt.room_id, "room").bump()
+        )
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:

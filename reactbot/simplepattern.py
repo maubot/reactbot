@@ -13,7 +13,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Callable, List, Dict, Optional, NamedTuple
+from typing import Callable, Dict, List, NamedTuple, Optional
 import re
 
 
@@ -68,21 +68,22 @@ class SimplePattern:
             return SimpleMatch(self.pattern)
 
     @staticmethod
-    def compile(pattern: str, flags: re.RegexFlag = re.RegexFlag(0), force_raw: bool = False
-                ) -> Optional['SimplePattern']:
+    def compile(
+        pattern: str, flags: re.RegexFlag = re.RegexFlag(0), force_raw: bool = False
+    ) -> Optional["SimplePattern"]:
         ignorecase = flags == re.IGNORECASE
         s_pattern = pattern.lower() if ignorecase else pattern
         esc = ""
         if not force_raw:
             esc = re.escape(pattern)
         first, last = pattern[0], pattern[-1]
-        if first == '^' and last == '$' and (force_raw or esc == f"\\^{pattern[1:-1]}\\$"):
+        if first == "^" and last == "$" and (force_raw or esc == f"\\^{pattern[1:-1]}\\$"):
             s_pattern = s_pattern[1:-1]
             func = matcher_equals
-        elif first == '^' and (force_raw or esc == f"\\^{pattern[1:]}"):
+        elif first == "^" and (force_raw or esc == f"\\^{pattern[1:]}"):
             s_pattern = s_pattern[1:]
             func = matcher_startswith
-        elif last == '$' and (force_raw or esc == f"{pattern[:-1]}\\$"):
+        elif last == "$" and (force_raw or esc == f"{pattern[:-1]}\\$"):
             s_pattern = s_pattern[:-1]
             func = matcher_endswith
         elif force_raw or esc == pattern:

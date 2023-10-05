@@ -13,17 +13,17 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Union, Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple, Union
 from itertools import chain
-import json
 import copy
+import json
 import re
 
 from attr import dataclass
 from jinja2 import Template as JinjaStringTemplate
 from jinja2.nativetypes import Template as JinjaNativeTemplate
 
-from mautrix.types import EventType, Event
+from mautrix.types import Event, EventType
 
 
 class Key(str):
@@ -48,7 +48,7 @@ class Template:
 
     _variable_locations: List[Tuple[Index, ...]] = None
 
-    def init(self) -> 'Template':
+    def init(self) -> "Template":
         self._variable_locations = []
         self._map_variable_locations((), self.content)
         return self
@@ -80,13 +80,18 @@ class Template:
             return variables[full_var_match.group(1)]
         return variable_regex.sub(lambda match: str(variables[match.group(1)]), tpl)
 
-    def execute(self, evt: Event, rule_vars: Dict[str, Any], extra_vars: Dict[str, str]
-                ) -> Dict[str, Any]:
+    def execute(
+        self, evt: Event, rule_vars: Dict[str, Any], extra_vars: Dict[str, str]
+    ) -> Dict[str, Any]:
         variables = extra_vars
         for name, template in chain(rule_vars.items(), self.variables.items()):
             if isinstance(template, JinjaNativeTemplate):
                 rendered_var = template.render(event=evt, variables=variables, **global_vars)
-                if not isinstance(rendered_var, (str, int, list, tuple, dict, bool)) and rendered_var is not None and rendered_var is not OmitValue:
+                if (
+                    not isinstance(rendered_var, (str, int, list, tuple, dict, bool))
+                    and rendered_var is not None
+                    and rendered_var is not OmitValue
+                ):
                     rendered_var = str(rendered_var)
                 variables[name] = rendered_var
             else:

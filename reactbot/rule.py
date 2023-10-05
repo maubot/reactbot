@@ -13,16 +13,15 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from typing import Optional, Match, Dict, List, Set, Union, Pattern, Any
+from typing import Any, Dict, List, Match, Optional, Pattern, Set, Union
 
 from attr import dataclass
 
-from mautrix.types import RoomID, EventType
-
 from maubot import MessageEvent
+from mautrix.types import EventType, RoomID
 
-from .template import Template, OmitValue
 from .simplepattern import SimplePattern
+from .template import OmitValue, Template
 
 RPattern = Union[Pattern, SimplePattern]
 
@@ -59,7 +58,7 @@ class Rule:
     async def execute(self, evt: MessageEvent, match: Match) -> None:
         extra_vars = {
             "0": match.group(0),
-            **{str(i+1): val for i, val in enumerate(match.groups())},
+            **{str(i + 1): val for i, val in enumerate(match.groups())},
             **match.groupdict(),
         }
         content = self.template.execute(evt=evt, rule_vars=self.variables, extra_vars=extra_vars)
