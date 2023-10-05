@@ -1,0 +1,54 @@
+templates:
+    always_in_thread:
+        type: m.room.message
+        variables:
+            thread_parent: '{{event.content.get_thread_parent() or event.event_id}}'
+            event_id: '{{event.event_id}}'
+        content:
+            msgtype: m.text
+            body: $${text}
+            m.relates_to:
+                rel_type: m.thread
+                event_id: $${thread_parent}
+                is_falling_back: true
+                m.in_reply_to:
+                    event_id: $${event_id}
+    # Reply in thread if the message is already in a thread, otherwise use a normal reply.
+    # This currently requires using a jinja template as the content instead of a normal yaml map.
+    thread_or_reply:
+        type: m.room.message
+        content: |
+            {
+                "msgtype": "m.text",
+                "body": "{{ text }}",
+                "m.relates_to": {
+                    {% if event.content.get_thread_parent() %}
+                    "rel_type": "m.thread",
+                    "event_id": "{{ event.content.get_thread_parent() }}",
+                    "is_falling_back": true,
+                    {% endif %}
+                    "m.in_reply_to": {
+                        "event_id": "{{ event.event_id }}"
+                    }
+                }
+            }
+
+antispam:
+  room:
+    max: 60
+    delay: 60
+  user:
+    max: 60
+    delay: 60
+
+rules:
+    thread:
+        matches: [^!thread$]
+        template: always_in_thread
+        variables:
+            text: meow 3:<
+    maybe_thread:
+        matches: [^!thread --maybe$]
+        template: thread_or_reply
+        variables:
+            text: meow >:3
