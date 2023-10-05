@@ -17,21 +17,17 @@ templates:
     # This currently requires using a jinja template as the content instead of a normal yaml map.
     thread_or_reply:
         type: m.room.message
-        content: |
-            {
-                "msgtype": "m.text",
-                "body": "{{ text }}",
-                "m.relates_to": {
-                    {% if event.content.get_thread_parent() %}
-                    "rel_type": "m.thread",
-                    "event_id": "{{ event.content.get_thread_parent() }}",
-                    "is_falling_back": true,
-                    {% endif %}
-                    "m.in_reply_to": {
-                        "event_id": "{{ event.event_id }}"
-                    }
-                }
-            }
+        variables:
+            relates_to: |
+                {{
+                    {"rel_type": "m.thread", "event_id": event.content.get_thread_parent(), "is_falling_back": True, "m.in_reply_to": {"event_id": event.event_id}}
+                    if event.content.get_thread_parent()
+                    else {"m.in_reply_to": {"event_id": event.event_id}}
+                }}
+        content:
+            msgtype: m.text
+            body: $${text}
+            m.relates_to: $${relates_to}
 
 antispam:
   room:
