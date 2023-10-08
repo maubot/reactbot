@@ -29,6 +29,8 @@ templates:
 default_flags:
 - ignorecase
 
+ignored_users: []
+
 antispam:
   room:
     max: 1
