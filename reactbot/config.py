@@ -64,6 +64,7 @@ class Config(BaseProxyConfig):
                 type=EventType.find(rule["type"]) if "type" in rule else None,
                 template=self.templates[rule["template"]],
                 variables=self._parse_variables(rule),
+                continue_after_match=rule.get("continue_after_match", True),
             )
         except Exception as e:
             raise ConfigError(f"Failed to load {name}") from e
