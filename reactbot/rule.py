@@ -35,6 +35,7 @@ class Rule:
     template: Template
     type: Optional[EventType]
     variables: Dict[str, Any]
+    continue_after_match: bool
 
     def _check_not_match(self, body: str) -> bool:
         for pattern in self.not_matches:
