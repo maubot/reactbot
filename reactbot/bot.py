@@ -106,4 +106,4 @@ class ReactBot(Plugin):
                     await rule.execute(evt, match)
                 except Exception:
                     self.log.exception(f"Failed to execute {name} in {evt.room_id}")
-                return
+
