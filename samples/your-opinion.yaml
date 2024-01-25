@@ -1,0 +1,44 @@
+templates:
+    reaction:
+        type: m.reaction
+        variables:
+            react_to_event: '{{event.content.get_reply_to() or event.event_id}}'
+        content:
+            m.relates_to:
+                rel_type: m.annotation
+                event_id: $${react_to_event}
+                key: $${reaction}
+
+
+default_flags:
+- ignorecase
+antispam:
+    room:
+        max: 60
+        delay: 60
+    user:
+        max: 60
+        delay: 60
+
+rules:
+    opinon_up:
+        raw: false
+        matches: '#youropinion\b(?!`)'
+        template: reaction
+        continue_after_match: true
+        variables:
+            reaction: 👍
+    opinion_down:
+        raw: false
+        matches: '#youropinion\b(?!`)'
+        template: reaction
+        continue_after_match: true
+        variables:
+            reaction: 👎
+    opinon_shrug:
+        raw: false
+        matches: '#youropinion\b(?!`)'
+        template: reaction
+        variables:
+            reaction: 🤷
+
