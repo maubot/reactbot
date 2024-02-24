@@ -12,6 +12,8 @@ A [maubot](https://github.com/maubot/maubot) that responds to messages that matc
 * [samples/nitter.yaml](samples/nitter.yaml) has an example of matching tweet links
   and responding with a corresponding nitter.net link.
 * [samples/thread.yaml](samples/thread.yaml) has an example of replying in a thread.
+* [samples/git.yaml](samples/git.yaml) contains a bot that will expand GitHub/GitLab/etc
+  issue/PR mentions to links including multiple configuration examples.
 
 ## Config format
 ### Templates
