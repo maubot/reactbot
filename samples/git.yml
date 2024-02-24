@@ -1,0 +1,120 @@
+templates:
+    any:
+        type: m.room.message
+        content:
+            msgtype: $${type}
+            body: '[$${1}/$${2}#$${3}]($${prefix}/$${1}/$${2}$${infix}$${3})'
+            format: org.matrix.custom.html
+            formatted_body: '<a href="$${prefix}/$${1}/$${2}$${infix}$${3}">$${1}/$${2}#$${3}</a>'
+
+    org:
+        type: m.room.message
+        content:
+            msgtype: $${type}
+            body: '[$${1}#$${2}]($${prefix}/$${org}/$${1}$${infix}$${2})'
+            format: org.matrix.custom.html
+            formatted_body: '<a href="$${prefix}/$${org}/$${1}$${infix}$${2}">$${1}#$${2}</a>'
+
+    project:
+        type: m.room.message
+        content:
+            msgtype: $${type}
+            body: '[$${project}$${1}]($${prefix}/$${org}$${project}$${infix}$${1})'
+            format: org.matrix.custom.html
+            formatted_body: '<a href="$${prefix}/$${org}/$${project}$${infix}$${1}">$${project}#$${1}</a>'
+
+default_flags:
+- ignorecase
+antispam:
+    room:
+        max: 1
+        delay: 1
+    user:
+        max: 2
+        delay: 1
+
+rules:
+    # note that the order of the following rules is relevant, as they are evaluated top to bottom
+    # the order is generally by the `matches` regex from most specific to least (i.e. more wildcards) specific
+
+    # matches some predefined repos that are not on the default hosted git service (see below)
+    some_codeberg:
+        matches:
+        - (matrix-community)/(graphics)\#([0-9]+)
+        - (imbev)/(simplematrixbotlib)\#([0-9]+)
+        template: any
+        variables:
+            type: m.notice
+            prefix: https://codeberg.org
+            infix: /issues/
+
+    # default service for specifically mentioned repos
+    # [a-zA-Z0-9\-_.] are the allowed project slug characters on GitHub
+    any_github:
+        matches:
+        - ([a-zA-Z0-9\-_.]+)/([a-zA-Z0-9\-_.]+)\#([0-9]+)
+        template: any
+        variables:
+            type: m.notice
+            prefix: https://github.com
+            infix: /pull/
+
+    # shortcut for project#issue that is not in the default org (and git service) (see below)
+    wrench_codeberg:
+        matches:
+        - (matrix-wrench)\#([0-9]+)
+        template: org
+        variables:
+            type: m.notice
+            prefix: https://gitlab.com
+            org: jaller94
+            infix: /-/issues/
+
+    # shortcut for project#issue with an alias (which may also be in another than the default org)
+    # the actual project name is matrix-hookshot, given below,
+    # but this will also match hookshot#123 and autoexpand it for convenience
+    hookshot_alias_github:
+        matches:
+        - hookshot\#([0-9]+)
+        template: project
+        variables:
+            type: m.notice
+            prefix: https://github.com
+            org: matrix-org
+            project: matrix-hookshot
+            infix: /pull/
+
+    # mix and match of multiple settings
+    calendar_gitlab:
+        matches:
+        - calendar\#([0-9]+)
+        template: project
+        variables:
+            type: m.notice
+            prefix: https://gitlab.com
+            org: uhoreg
+            project: matrix_daily_calendar
+            infix: /-/issues/
+
+    # shortcut for project#issue, which will assume the given org
+    maubot_github:
+        matches:
+        - ([a-zA-Z0-9\-_.]+)\#([0-9]+)
+        template: org
+        variables:
+            type: m.notice
+            prefix: https://github.com
+            org: maubot
+            infix: /pull/
+
+    # shortcut for #issue, which will assume the given project
+    reactbot_github:
+        matches:
+        - \#([0-9]+)
+        template: project
+        variables:
+            type: m.notice
+            prefix: https://github.com
+            org: maubot
+            project: reactbot
+            infix: /pull/
