@@ -18,7 +18,7 @@ from typing import Any, Dict, List, Match, Optional, Pattern, Set, Union
 from attr import dataclass
 
 from maubot import MessageEvent
-from mautrix.types import EventType, RoomID
+from mautrix.types import EventType, RoomID, UserID,RelationType,MessageType
 
 from .simplepattern import SimplePattern
 from .template import OmitValue, Template
@@ -30,6 +30,11 @@ RPattern = Union[Pattern, SimplePattern]
 class Rule:
     rooms: Set[RoomID]
     not_rooms: Set[RoomID]
+    users: Set[UserID]
+    not_users: Set[UserID]
+    not_thread: bool
+    only_text: bool
+    is_reedit: bool
     matches: List[RPattern]
     not_matches: List[RPattern]
     template: Template
@@ -46,6 +51,16 @@ class Rule:
         if len(self.rooms) > 0 and evt.room_id not in self.rooms:
             return None
         elif evt.room_id in self.not_rooms:
+            return None
+        if len(self.users) > 0 and evt.sender not in self.users:
+            return None
+        elif evt.sender in self.not_users:
+            return None
+        if self.not_thread and  evt.content.relates_to and evt.content.relates_to.rel_type == RelationType.THREAD:
+            return None
+        if self.only_text and (evt.content.msgtype != MessageType.TEXT and evt.content.msgtype != MessageType.NOTICE):
+            return None
+        if self.is_reedit == False and (evt.content.relates_to and evt.content.relates_to.rel_type == RelationType.REPLACE):
             return None
         for pattern in self.matches:
             match = pattern.search(evt.content.body)

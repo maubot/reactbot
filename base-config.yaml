@@ -1,49 +1,114 @@
 templates:
-  reaction:
-    type: m.reaction
-    variables:
-      react_to_event: "{{event.content.get_reply_to() or event.event_id}}"
-    content:
-      m.relates_to:
-        rel_type: m.annotation
-        event_id: $${react_to_event}
-        key: $${reaction}
-  alot:
-    type: m.room.message
-    content:
-      msgtype: m.image
-      body: image.png
-      url: "mxc://maunium.net/eFnyRdgJOHlKXCxzoKPQbwLV"
-      info:
-        mimetype: image/png
-        w: 680
-        h: 510
-        size: 247492
-        thumbnail_url: "mxc://maunium.net/PMxffxMfcUZeWeeYMDCdghBG"
-        thumbnail_info:
-          w: 680
-          h: 510
-          mimetype: image/png
-          size: 233763
+    text_reaction:
+        type: m.reaction
+        variables:
+            react_to_event: '{{event.event_id}}'
+        content:
+            m.relates_to:
+                rel_type: m.annotation
+                event_id: $${react_to_event}
+                key: $${reaction}
 
 default_flags:
 - ignorecase
-
 antispam:
-  room:
-    max: 1
-    delay: 60
-  user:
-    max: 2
-    delay: 60
+    room:
+        max: 60
+        delay: 60
+# max: 在指定的时间间隔（由 delay 定义）内，允许每个用户发送的最大消息数量。
+# delay: 时间间隔，单位为秒。在这个时间间隔内，用户发送的消息数量不能超过 max 值。
+    user:
+        max: 30
+        delay: 60
 
 rules:
-  twim_cookies:
-    rooms: ["!FPUfgzXYWTKgIrwKxW:matrix.org"]
-    matches: [^TWIM]
-    template: reaction
-    variables:
-      reaction: 🍪
-  alot:
-    matches: [alot]
-    template: alot
+    like_button:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 👍点赞
+    to_aishow:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 🤖转发
+    collect_button:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: ❤️收藏
+    voice_button:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 🎤语音
+    rewrite_button:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: ♻️重制
+    rag_button:
+        users: ['@know:meiu.xyz', '@aibot1:meiu.xyz', '@aibot2:meiu.xyz', '@aibot3:meiu.xyz']
+        not_rooms: ["!erVdKitClvcjVzMjUw:meiu.xyz"]
+        only_text: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 🌾采集
+
+
+    todo_idea:
+        users: ['@ming:meiu.xyz']
+        rooms: ['!WtMywSEpJiIxLlYxzZ:meiu.xyz']
+        not_thread: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 💡想法
+    todo_plan:
+        users: ['@ming:meiu.xyz']
+        rooms: ['!WtMywSEpJiIxLlYxzZ:meiu.xyz']
+        not_thread: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 📝计划
+    todo_doing:
+        users: ['@ming:meiu.xyz']
+        rooms: ['!WtMywSEpJiIxLlYxzZ:meiu.xyz']
+        not_thread: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: ⏳进行        
+    todo_achieve:
+        users: ['@ming:meiu.xyz']
+        rooms: ['!WtMywSEpJiIxLlYxzZ:meiu.xyz']
+        not_thread: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: ✅完成
+    todo_pause:
+        users: ['@ming:meiu.xyz']
+        rooms: ['!WtMywSEpJiIxLlYxzZ:meiu.xyz']
+        not_thread: true
+        matches: [.*]
+        template: text_reaction
+        variables:
+            reaction: 💤搁置

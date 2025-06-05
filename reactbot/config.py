@@ -59,6 +59,11 @@ class Config(BaseProxyConfig):
             return Rule(
                 rooms=set(rule.get("rooms", [])),
                 not_rooms=set(rule.get("not_rooms", [])),
+                users=set(rule.get("users", [])),
+                not_users=set(rule.get("not_users", [])),
+                only_text=rule.get("only_text", False),
+                not_thread=rule.get("not_thread", False),
+                is_reedit=rule.get("is_reedit", False),
                 matches=self._compile_all(rule["matches"]),
                 not_matches=self._compile_all(rule.get("not_matches", [])),
                 type=EventType.find(rule["type"]) if "type" in rule else None,

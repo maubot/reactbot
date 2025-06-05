@@ -45,7 +45,7 @@ class FloodInfo:
 
 
 class ReactBot(Plugin):
-    allowed_msgtypes: Tuple[MessageType, ...] = (MessageType.TEXT, MessageType.EMOTE)
+    allowed_msgtypes: Tuple[MessageType, ...] = (MessageType.TEXT, MessageType.EMOTE, MessageType.NOTICE)
     user_flood: Dict[UserID, FloodInfo]
     room_flood: Dict[RoomID, FloodInfo]
 
@@ -95,15 +95,17 @@ class ReactBot(Plugin):
 
     @event.on(EventType.ROOM_MESSAGE)
     async def event_handler(self, evt: MessageEvent) -> None:
-        if evt.sender == self.client.mxid or evt.content.msgtype not in self.allowed_msgtypes:
+        if evt.sender == evt.content.msgtype not in self.allowed_msgtypes:
             return
         for name, rule in self.config.rules.items():
             match = rule.match(evt)
             if match is not None:
                 if self.is_flood(evt):
+                    # 去掉中间的 return 并使用 continue 可以确保即使某个规则被认为是“洪水攻击”，其他规则依然有机会被执行。
                     return
                 try:
                     await rule.execute(evt, match)
                 except Exception:
                     self.log.exception(f"Failed to execute {name} in {evt.room_id}")
-                return
+                # 去掉最后的 return 会导致所有匹配的规则都被执行。这种设计适用于需要同时处理多个规则的情况。
+                # return
