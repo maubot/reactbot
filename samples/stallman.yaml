@@ -8,7 +8,7 @@ templates:
             body: $${message}
 
 default_flags:
-- ignorecase
+    - ignorecase
 
 antispam:
     room:
